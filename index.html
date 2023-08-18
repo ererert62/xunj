@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xuni</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      
+    }
+    body{
+      min-height: 100vh;
+      overflow: hidden;
+      background: #111;
+
+    }
+    span{
+      position: absolute;
+      pointer-events: none;
+      filter: drop-shadow(0 0 15px rgba(0,0,0,0.5));
+      animation: fadeInOut 1s linear infinite;
+    }
+    span::before{
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: url(img/heart6.png);
+      background-size: cover;
+      animation: moveShape 1s linear infinite;
+      
+    }
+    @keyframes fadeInOut{
+      0%,100%
+     { opacity: 0;}
+     20%,80%
+     {opacity: 1;}
+    }
+    @keyframes moveShape{
+      0%
+      {
+        transform: translate(0) rotate(0deg);
+      }
+      100%
+      {
+        transform: translate(300px) rotate(360deg);
+      }
+      
+    }
+    /* Ваш стиль остается без изменений */
+  </style>
+</head>
+<body>
+  <script>
+    const body = document.querySelector('body');
+    let heartsCreated = 0;
+    let waitingTimeout = null;
+
+    // Функция для создания сердечка
+    function createHeart(x, y) {
+      const heart = document.createElement('span');
+
+      heart.style.left = x + 'px';
+      heart.style.top = y + 'px';
+
+      const size = Math.random() * 80;
+      heart.style.width = 20 + size + 'px';
+      heart.style.height = 20 + size + 'px';
+
+      const transformValue = Math.random() * 360;
+      heart.style.transform = 'rotate(' + transformValue + 'deg)';
+
+      body.appendChild(heart);
+
+      setTimeout(function () {
+        heart.remove();
+      }, 1000);
+
+      heartsCreated++;
+      if (heartsCreated >= 300) {
+        clearTimeout(waitingTimeout);
+        window.location.href = '1.html'; // Замените на свой URL
+      }
+    }
+
+    // Обработчик события движения мыши или касания
+    function handleMove(event) {
+      event.preventDefault();
+      const x = event.clientX || event.touches[0].clientX;
+      const y = event.clientY || event.touches[0].clientY;
+      createHeart(x, y);
+    }
+
+    // Обработчик события движения мыши
+    body.addEventListener('mousemove', handleMove);
+
+    // Обработчики событий касания
+    body.addEventListener('touchstart', handleMove);
+    body.addEventListener('touchmove', handleMove);
+
+    // Установка таймаута для автоматического перехода через 10 секунд
+    waitingTimeout = setTimeout(function () {
+      window.location.href = '1.html'; // Замените на свой URL
+    }, 30000); // 10000 миллисекунд (10 секунд)
+  </script>
+</body>
+</html>

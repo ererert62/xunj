@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ксюня</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    /* Ваши стили */
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body{
+      background: radial-gradient(#293a4d, #111e2c);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    body.on{
+      background: radial-gradient(#293a4d,#111e2c);
+      filter:brightness(1);
+    }
+
+    .bulb{
+      position: relative;
+      width: 80px;
+      height: 80px;
+      background:#444;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    body.on .bulb{
+      background: #f4f0e3;
+      box-shadow: 0 0 50px #f1ecd8,
+      0 0 150px #fad045,
+      0 20px 250px #ffd857,
+      0 50px 400px #ecd077,
+      0 70px 650px #fff,
+      0 100px 900px #fff,
+      0 120px 1550px #fff;
+    }
+
+    body.on .bulb::before{
+      background: #f6f4ee;
+    }
+
+    body.on .bulb span:nth-child(1){
+      box-shadow: 20px 20px 0 10px #f4f2e9;
+    }
+
+    body.on .bulb span:nth-child(2){
+      box-shadow: -20px 20px 0 10px #f4f1e9;
+    }
+
+    .bulb::before{
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: 22.5px;
+      width: 35px;
+      height: 80px;
+      background-color: #444;
+      border-top:30px solid #000;
+      border-radius: 10px;
+    }
+
+    body.on .bulb::after{
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: 120px;
+      height: 120px;
+      background: #efebdd;
+      border-radius: 50%;
+      filter: blur(55px);
+    }
+
+    .bulb span:nth-child(1) {
+      position: absolute;
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-bottom-right-radius: 40px;
+      background-color:transparent;
+      box-shadow: 20px 20px 0 10px #444;
+      top: -16px;
+      left:-4px;
+      transform: rotate(342deg);
+    }
+
+    .bulb span:nth-child(2) {
+      position: absolute;
+      display: block;
+      width: 30px;
+      height: 30px;
+      border-bottom-left-radius: 40px;
+      background-color:transparent;
+      box-shadow: -20px 20px 0 10px #444;
+      top: -16px;
+      right:-4px;
+      transform: rotate(18deg);
+    }
+
+    .wire{
+      position: absolute;
+      left: calc(50% - 2px);
+      bottom: 50%;
+      width: 4px;
+      height: 60vh;
+      background: #000;
+      z-index: 1;
+    }
+
+    .switch{
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(#a0f7f6,#ccc,#2dbfe7) ;
+      border-radius: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0.02;
+      z-index: 2;
+      margin-top: -80px;
+      box-shadow: inset 0 0 5px 15px rgba(1, 21, 35, 0.726);
+    }
+    
+ 
+    .switch .btn{
+      position: relative;
+      width: 25px;
+      height: 40px;
+      background: linear-gradient(#777,#fff,#777);
+      border-radius: 5px;
+      border: 5px solid #f5f9ed;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+   
+    .switch .btn::before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 85%;
+      background: linear-gradient(#fff,#fff);
+      border-radius: 4px;
+      
+    }
+
+    .on .switch .btn::before{
+      top: 15%;
+    }
+
+    #audio{
+      display: none;
+    }
+
+    /* Добавляем полупрозрачный оттенок */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(253, 253, 253, 0);
+      pointer-events:none;
+      z-index: 2;
+      transition: background-color 2.5s ease,;
+    }
+    .background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('img/4.png'); /* Путь к вашему фоновому изображению */
+      background-size: cover;
+      opacity: 0;
+
+    }
+    
+    @keyframes fadeInBackground {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity:0.8;
+      }
+    }
+    .image-container .img{
+      position:relative;
+    /*  box-shadow: inset 10px 10px 15px #22222291,
+      16px 19px 15px #22222246,
+      inset -15px -17px 21px  #ffffffb2,
+      16px 18px 18px  #22222250;*/
+      box-shadow: inset 20px 20px 30px rgba(3, 50, 85, 0.995),
+    15px 25px 10px rgba(0,0,0,0.1),
+    15px 20px 20px rgba(0,0,0,0.05),
+    inset -5px -10px 25px rgb(245, 253, 255);
+      transition: 0.5s ease-out;
+      background-color: #edf4f70c;
+    }
+    .image-container .img:hover{
+      margin-left:-33px;
+      border-radius: 50% !important;
+      width: 251px;
+      height: 251px;
+      background-color: #08679658;
+      box-shadow: inset 45px 35px 45px #00051a,
+      18px 24px 18px #22222243,
+      inset -10px -11px 35px  #f8ffff,
+      19px 21px 21px  #22222231;
+      z-index: 200;
+    }
+    #img1:hover{
+      margin-top: -10px;
+      margin-left: -10px;
+      width: 192px;
+      height: 192px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img2:hover{
+      margin-top: -20px;
+      margin-left: 0px;
+      width: 232px;
+      height: 232px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img3:hover{
+      margin-top: -10px;
+      margin-left: -10px;
+      width: 182px;
+      height: 182px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img4:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 192px;
+      height: 192px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img5:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 212px;
+      height: 212px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img6:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img7:hover{
+      margin-top: -20px;
+      margin-left: -10px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img8:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 212px;
+      height: 212px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img9:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 212px;
+      height: 202px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img10:hover{
+      margin-top:5px;
+      margin-left: 10px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img11:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 212px;
+      height: 212px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img12:hover{
+      margin-top: -70px;
+      margin-left: 10px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img13:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 212px;
+      height: 212px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img14:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 212px;
+      height: 212px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img15:hover{
+      margin-top: -30px;
+      margin-left: -10px;
+      width: 202px;
+      height: 202px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img16:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img17:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img18:hover{
+      margin-top: 10px;
+      margin-left: 20px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img19:hover{
+      margin-top: -20px;
+      margin-left: 20px;
+      width: 212px;
+      height: 212px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img20:hover{
+      margin-top: 10px;
+      margin-left: 20px;
+      width: 202px;
+      height: 202px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img21:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 222px;
+      height: 222px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img22:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 192px;
+      height: 192px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img23:hover{
+      margin-top: -20px;
+      margin-left: -10px;
+      width: 192px;
+      height: 192px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    #img24:hover{
+      margin-top: -20px;
+      margin-left: 10px;
+      width: 192px;
+      height: 192px;
+      transition:0.6s ease-in-out;
+      opacity:1;
+    }
+    .image-container .im1::before{
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 44px;
+      left: 40px;
+      border-radius:50% 50% 44% 56% / 25% 34% 66% 75% ;
+      background: #fffbfe;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im2::before{
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 54px;
+      left: 40px;
+      border-radius: 50% 50% 34% 66% / 25% 44% 56% 75% ;
+      background: #fff9ff;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im3::before{
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 20px;
+      top: 44px;
+      left: 35px;
+      border-radius: 40% 50% 58% 42% / 53% 32% 68% 67% ;
+      background: #f8f0f5;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im4::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 50% 58% 42% / 50% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im5::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 50% 58% 42% / 50% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im6::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 50% 58% 42% / 50% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im7::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 30% 50% 58% 42% / 50% 45% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im8::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 25px;
+      top: 44px;
+      left: 30px;
+      border-radius: 60% 50% 58% 52% / 40% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im9::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 70% 50% 58% 42% / 30% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im10::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 30% 58% 42% / 50% 65% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im11::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 50% 58% 52% / 40% 35% 65% 50% ;
+      background:#fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im12::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 34px;
+      border-radius: 40% 50% 58% 42% / 50% 45% 65% 50% ;
+      background:#fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im13::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 60% 58% 42% / 58% 35% 45% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im14::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 50% 48% 42% / 50% 45% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im15::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 40% 50% 58% 42% / 50% 45% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im16::before{
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 60% 58% 42% / 50% 35% 35% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im17::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 55% 50% 59% 42% / 50% 55% 65% 40% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im18::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 24px;
+      top: 44px;
+      left: 30px;
+      border-radius: 30% 50% 58% 42% / 50% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im19::before{
+      content: '';
+      position: absolute;
+      width: 25px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 50% 48% 42% / 50% 45% 65% 50% ;
+      background:#fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im20::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 25px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 60% 58% 62% / 50% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im21::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 30px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 60% 58% 42% / 60% 35% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im22::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 44px;
+      left: 30px;
+      border-radius: 50% 30% 58% 42% / 50% 65% 65% 50% ;
+      background: #fcf4f7;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im23::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 20px;
+      top: 47px;
+      left: 30px;
+      border-radius: 30% 50% 58% 52% / 50% 35% 65% 50% ;
+      background: #f9f1f4;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .im24::before{
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 26px;
+      top: 54px;
+      left: 35px;
+      border-radius: 50% 40% 58% 42% / 40% 35% 65% 50% ;
+      background: #fcf5f7fd;
+      box-shadow: 0 0 5px white;
+    }
+    .image-container .img:nth-child(1){
+      animation: animate 8s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate{
+      0%{
+        border-radius:40% 60% 49% 51% / 36% 60% 40% 64%  ;
+      }
+      50% {
+        border-radius:51% 49% 54% 46% / 42% 49% 51% 58% ;
+    }
+      100%{
+        border-radius:40% 60% 49% 51% / 36% 60% 40% 64%  ;
+      }
+    }
+    .image-container .img:nth-child(2){
+      border-radius: 37% 63% 36% 64% / 35% 37% 63% 65% ;
+      animation: animate2 11s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate2{
+      0%{
+        border-radius: 37% 63% 36% 64% / 35% 37% 63% 65% ;
+
+      }
+      50%{
+       border-radius: 39% 61% 70% 30% / 56% 40% 60% 44% ;
+      }
+      100%{
+        border-radius: 37% 63% 36% 64% / 35% 37% 63% 65% ;
+
+      }
+    }
+    .image-container .img:nth-child(3){
+      border-radius: 55% 45% 40% 60% / 50% 45% 55% 50%  ;
+      animation: animate3 7.9s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate3{
+      0%{
+        border-radius: 55% 45% 40% 60% / 50% 45% 55% 50%  ;
+
+      }
+      50%{
+      border-radius: 39% 61% 43% 57% / 43% 40% 60% 57% ;
+      }
+      100%{
+      border-radius: 55% 45% 40% 60% / 50% 45% 55% 50%  ;
+        
+      }
+    }
+    .image-container .img:nth-child(4){
+      border-radius: 50% 50% 67% 33% / 57% 58% 42% 43% ;
+      animation: animate4 11.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate4{
+      0%{
+        border-radius: 50% 50% 67% 33% / 57% 58% 42% 43% ;
+
+      }
+      50%{
+     border-radius: 45% 55% 43% 57% / 59% 40% 60% 41% ;
+      }
+      100%{
+      border-radius: 50% 50% 67% 33% / 57% 58% 42% 43% ;
+        
+      }
+    }
+    .image-container .img:nth-child(5){
+      border-radius:31% 69% 50% 50% / 43% 45% 55% 57% ;
+      animation: animate5 10s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate5{
+      0%{
+        border-radius:31% 69% 50% 50% / 43% 45% 55% 57% ;
+
+      }
+      50%{
+      border-radius: 64% 36% 68% 32% / 42% 40% 60% 58% ;
+      }
+      100%{
+      border-radius:31% 69% 50% 50% / 43% 45% 55% 57% ;
+        
+      }
+    }
+    .image-container .img:nth-child(6){
+      border-radius:53% 47% 60% 40% / 60% 61% 39% 40% ;
+      animation: animate6 9s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate6{
+      0%{
+        border-radius:53% 47% 60% 40% / 60% 61% 39% 40% ;
+
+      }
+      50%{
+     border-radius: 37% 63% 60% 40% / 42% 40% 60% 58% ;
+      }
+      100%{
+      border-radius:53% 47% 60% 40% / 60% 61% 39% 40% ;
+        
+      }
+    }
+    .image-container .img:nth-child(7){
+      border-radius:37% 63% 53% 47% / 53% 52% 48% 47% ;
+      animation: animate7 7.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate7{
+      0%{
+        border-radius:37% 63% 53% 47% / 53% 52% 48% 47% ;
+
+      }
+      50%{
+     border-radius: 45% 55% 60% 40% / 49% 48% 52% 51% ;
+      }
+      100%{
+      border-radius:37% 63% 53% 47% / 53% 52% 48% 47% ;
+        
+      }
+    }
+    .image-container .img:nth-child(8){
+      border-radius:50% 50% 41% 59% / 46% 43% 57% 54% ;
+      animation: animate8 13s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate8{
+      0%{
+        border-radius:50% 50% 41% 59% / 46% 43% 57% 54% ;
+
+      }
+      50%{
+      border-radius: 45% 55% 60% 40% / 62% 62% 38% 38% ;
+      }
+      100%{
+      border-radius:50% 50% 41% 59% / 46% 43% 57% 54% ;
+        
+      }
+    }
+    .image-container .img:nth-child(9){
+      border-radius: 50% 50% 55% 45% / 57% 60% 40% 43% ;
+      animation: animate9 6.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate9{
+      0%{
+        border-radius: 50% 50% 55% 45% / 57% 60% 40% 43% ;
+
+      }
+      50%{
+      border-radius: 50% 50% 73% 27% / 62% 61% 39% 38% ;
+      }
+      100%{
+      border-radius: 50% 50% 55% 45% / 57% 60% 40% 43% ;
+        
+      }
+    }
+    .image-container .img:nth-child(10){
+      border-radius: 38% 62% 54% 46% / 32% 63% 37% 68% ;
+      animation: animate10 11s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate10{
+      0%{
+        border-radius: 38% 62% 54% 46% / 32% 63% 37% 68% ;
+
+      }
+      50%{
+      border-radius: 53% 47% 53% 47% / 40% 45% 55% 60% ;
+      }
+      100%{
+      border-radius: 38% 62% 54% 46% / 32% 63% 37% 68% ;
+        
+      }
+    }
+    .image-container .img:nth-child(11){
+      border-radius: 62% 38% 45% 55% / 34% 47% 53% 66% ;
+      animation: animate11 9s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate11{
+      0%{
+        border-radius: 62% 38% 45% 55% / 34% 47% 53% 66% ;
+
+      }
+      50%{
+     border-radius: 40% 60% 45% 55% / 60% 36% 64% 40% ;
+      }
+      100%{
+      border-radius: 62% 38% 45% 55% / 34% 47% 53% 66% ;
+        
+      }
+    }
+    .image-container .img:nth-child(12){
+      border-radius:33% 67% 54% 46% / 43% 42% 58% 57% ;
+      animation: animate12 12s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate12{
+      0%{
+        border-radius:33% 67% 54% 46% / 43% 42% 58% 57% ;
+
+      }
+      50%{
+      border-radius: 57% 43% 54% 46% / 60% 36% 64% 40% ;
+      }
+      100%{
+      border-radius:33% 67% 54% 46% / 43% 42% 58% 57% ;
+        
+      }
+    }
+    .image-container .img:nth-child(13){
+      border-radius: 62% 38% 47% 53% / 43% 31% 69% 57% ;
+      animation: animate13 6.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate13{
+      0%{
+        border-radius: 62% 38% 47% 53% / 43% 31% 69% 57% ;
+
+      }
+      50%{
+     border-radius: 42% 58% 54% 46% / 46% 50% 50% 54% ;
+      }
+      100%{
+      border-radius: 62% 38% 47% 53% / 43% 31% 69% 57% ;
+        
+      }
+    }
+    .image-container .img:nth-child(14){
+      border-radius:52% 48% 42% 58% / 55% 52% 48% 45% ;
+      animation: animate14 8.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate14{
+      0%{
+        border-radius:52% 48% 42% 58% / 55% 52% 48% 45% ;
+
+      }
+      50%{
+      border-radius: 56% 44% 54% 46% / 57% 50% 50% 43% ;
+      }
+      100%{
+      border-radius:52% 48% 42% 58% / 55% 52% 48% 45% ;
+        
+      }
+    }
+    .image-container .img:nth-child(15){
+      border-radius:60% 40% 66% 34% / 46% 52% 48% 54% ;
+      animation: animate15 10s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate15{
+      0%{
+        border-radius:60% 40% 66% 34% / 46% 52% 48% 54% ;
+
+      }
+      50%{
+     border-radius: 70% 30% 66% 34% / 57% 33% 67% 43% ;
+      }
+      100%{
+      border-radius:60% 40% 66% 34% / 46% 52% 48% 54% ;
+        
+      }
+    }
+    .image-container .img:nth-child(16){
+      border-radius:40% 60% 59% 41% / 57% 52% 48% 43% ;
+      animation: animate16 9.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate16{
+      0%{
+        border-radius:40% 60% 59% 41% / 57% 52% 48% 43% ;
+
+      }
+      50%{
+     border-radius: 33% 67% 66% 34% / 37% 41% 59% 63% ;
+      }
+      100%{
+      border-radius:40% 60% 59% 41% / 57% 52% 48% 43% ;
+        
+      }
+    }
+    .image-container .img:nth-child(17){
+      border-radius:50% 50% 62% 38% / 43% 42% 58% 57% ;
+      animation: animate17 12.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate17{
+      0%{
+        border-radius:50% 50% 62% 38% / 43% 42% 58% 57% ;
+
+      }
+      50%{
+     border-radius: 65% 35% 66% 34% / 37% 32% 68% 63% ;
+      }
+      100%{
+      border-radius:50% 50% 62% 38% / 43% 42% 58% 57% ;
+        
+      }
+    }
+    .image-container .img:nth-child(18){
+      border-radius:44% 56% 37% 63% / 51% 42% 58% 49% ;
+      animation: animate18 9.5s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate18{
+      0%{
+        border-radius:44% 56% 37% 63% / 51% 42% 58% 49% ;
+
+      }
+      50%{
+     border-radius: 41% 59% 41% 59% / 37% 40% 60% 63% ;
+      }
+      100%{
+      border-radius:44% 56% 37% 63% / 51% 42% 58% 49% ;
+        
+      }
+    }
+    .image-container .img:nth-child(19){
+      border-radius:56% 44% 37% 63% / 37% 49% 51% 63% ;
+      animation: animate19 13s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate19{
+      0%{
+        border-radius:56% 44% 37% 63% / 37% 49% 51% 63% ;
+
+      }
+      50%{
+      border-radius: 36% 64% 67% 33% / 67% 43% 57% 33% ;
+      }
+      100%{
+      border-radius:56% 44% 37% 63% / 37% 49% 51% 63% ;
+        
+      }
+    }
+    .image-container .img:nth-child(20){
+      border-radius:41% 59% 55% 45% / 37% 36% 64% 63% ;
+      animation: animate20 11s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate20{
+      0%{
+        border-radius:41% 59% 55% 45% / 37% 36% 64% 63% ;
+
+      }
+      50%{
+      border-radius: 47% 53% 42% 58% / 37% 55% 45% 63% ;
+      }
+      100%{
+      border-radius:41% 59% 55% 45% / 37% 36% 64% 63% ;
+        
+      }
+    }
+    .image-container .img:nth-child(21){
+      border-radius:34% 47% 55% 33% / 34% 43% 54% 41% ;
+      animation: animate21 7.8s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate21{
+      0%{
+        border-radius:34% 47% 55% 33% / 34% 43% 54% 41% ;
+
+      }
+      50%{
+      border-radius: 60% 40% 62% 38% / 48% 42% 58% 52% ;
+      }
+      100%{
+      border-radius:34% 47% 55% 33% / 34% 43% 54% 41% ;
+        
+      }
+    }
+    .image-container .img:nth-child(22){
+      border-radius:59% 41% 38% 62% / 48% 35% 65% 52%  ;
+      animation: animate22 10.2s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate22{
+      0%{
+        border-radius:59% 41% 38% 62% / 48% 35% 65% 52%  ;
+
+      }
+      50%{
+        border-radius: 44% 56% 47% 53% / 48% 42% 58% 52% ;
+      }
+      100%{
+      border-radius:59% 41% 38% 62% / 48% 35% 65% 52%  ;
+        
+      }
+    }
+    .image-container .img:nth-child(23){
+      border-radius: 38% 62% 55% 45% / 48% 48% 72% 52% ;
+      animation: animate23 9.7s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate23{
+      0%{
+        border-radius: 38% 62% 55% 45% / 48% 48% 72% 52% ;
+
+      }
+      50%{
+        border-radius: 70% 30% 47% 53% / 48% 25% 75% 52% ;
+      }
+      100%{
+      border-radius: 38% 62% 55% 45% / 48% 48% 72% 52% ;
+        
+      }
+    }
+    .image-container .img:nth-child(24){
+      border-radius:46% 54% 54% 46% / 48% 64% 36% 52% ;
+      animation: animate24 8s ease-in-out infinite ;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animate24{
+      0%{
+        border-radius:46% 54% 54% 46% / 48% 64% 36% 52% ;
+      }
+      50%{
+        border-radius: 32% 68% 47% 53% / 40% 45% 55% 60% ;
+      }
+      100%{
+        border-radius:46% 54% 54% 46% / 48% 64% 36% 52% ;
+      }
+    }
+    .image-container.hidden {
+      display: none; /* Применяем display: none только к классу .hidden */
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(6,150px);
+      gap: 80px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .image-container {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 231, 169, 0.155);
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      z-index: 3;
+      gap:20px;
+      animation: fadeInImages 2.5s ease-in-out forwards;
+}
+    }
+
+    /* Стили для изображений */
+    .image-container .img{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 150px;
+      height: 150px;
+      margin: 10px;
+      padding: 15px;
+      border-radius: 10px;
+    }
+    #img1{
+      margin-top:-15px;
+      margin-left: -9px;
+      width: 90px;
+      height: 90px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img2{
+      margin-top:-25px;
+      margin-left:1px;
+      width: 120px;
+      height: 120px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img3{
+      margin-top:-5px;
+      margin-left: -1px;
+      width: 92px;
+      height: 92px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img4{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img5{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img6{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img7{
+      margin-top:-15px;
+      margin-left: -9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img8{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img9{
+      margin-top:-15px;
+      margin-left: -9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img10{
+      margin-top:-5px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img11{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img12{
+      margin-top:-25px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img13{
+      margin-top:-15px;
+      margin-left: -9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img14{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img15{
+      margin-top:-15px;
+      margin-left: -9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img16{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img17{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img18{
+      margin-top:-5px;
+      margin-left: -1px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img19{
+      margin-top:-15px;
+      margin-left: 9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img20{
+      margin-top:-15px;
+      margin-left: 9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img21{
+      margin-top:-15px;
+      margin-left: -1px;
+      width: 123px;
+      height: 123px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img22{
+      margin-top:-15px;
+      margin-left: 9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img23{
+      margin-top:-15px;
+      margin-left: -9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    #img24{
+      margin-top:-15px;
+      margin-left: 9px;
+      width: 113px;
+      height: 113px;
+      opacity: 0.4;
+     transition: 0.6s ease-in-out;
+    }
+    .img {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 170px;
+      height: 150px;
+      padding: 15px;
+      border-radius: 10px;
+      transition: 0.5s ease-out;
+      background-color: #22222214;
+      overflow: hidden;
+      transform: scale(1);
+    }
+    
+    .img:hover .img-inner {
+      border-radius: 50%!important;
+      width: 1px;
+      height: 1px;
+      background-color: #bd0a0a00;
+    }
+    .img:hover {
+      margin: -50px;
+
+      transform: scale(1.3); /* Изменяем размер на 10% при наведении */
+    }
+    
+    .img-inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      transition: inherit;
+    }
+    .img.hovered .img-inner {
+      border-radius: 50% !important;
+      width: 241px;
+      height: 241px;
+      background-color: #ffffff78;
+      box-shadow: inset 15px 15px 25px #22222266, 18px 24px 18px #22222243, inset -18px -18px 23px #ffffffa7, 19px 21px 21px #22222231;
+    }
+    img:not(:hover) {
+      margin-top: 5px;
+      margin-left: 2px;
+      width: 150px;
+      height: 150px;
+      opacity: 0.8;
+      transition: 1s ease-in-out;
+    }  
+    /* Добавляем стили для оверлея */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff00;
+      pointer-events: none;
+      z-index: 2;
+      transition: background-color 0.5s ease-in-out;
+      opacity: 0.1;
+    }
+    @keyframes fadeIn {
+      from {
+        background-color: rgba(150, 133, 28, 0.5);
+        opacity: 0;
+      }
+      to {
+        background-color: #f4f0f000;
+        opacity: 0.8;
+      }
+    }
+    
+    @keyframes fadeInImages2 {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .on .overlay {
+      animation: fadeIn 4s ease-in-out forwards;
+    }
+    
+    .on .image-container {
+      animation: fadeInImages2 4s ease-in-out forwards;
+    }
+    @keyframes fadeOut {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+    
+    .on .switch {
+      animation: fadeOut 1s ease-in-out forwards;
+    }
+    @keyframes fadeInImages {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    .notification-button {
+      position: relative;
+      width: 150px;
+      height: 120px;
+      box-shadow: inset 10px 10px 20px rgba(3, 50, 85, 0.995),
+      15px 25px 10px rgba(0,0,0,0.1),
+      15px 20px 20px rgba(0,0,0,0.05),
+      inset -5px -10px 15px rgb(205, 207, 207);
+      background-color: #e2ebef30;
+      border-radius: 35% 65% 53% 47% / 34% 40% 60% 66% ;
+      margin-top: -10px;
+      margin-left: -60px;
+      padding: 10px 15px;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    z-index: 4;
+    animation: animat1 7s ease-in-out infinite ;
+    transition: all 1s ease-in-out;
+    animation: animat1 5s ease-in-out infinite, pulseAnimation 1s ease-in-out infinite; /* Обе анимации */
+}
+    @keyframes animat1{
+      0%{
+        border-radius:43% 57% 45% 55% / 40% 50% 50% 60%  ;
+
+      }
+      50%{
+      border-radius: 57% 43% 56% 44% / 58% 42% 58% 42% ;
+      }
+      100%{
+      border-radius:43% 57% 45% 55% / 40% 50% 50% 60% ;
+        
+      }
+    }
+    @keyframes pulseAnimation {
+      0% {
+        transform: scale(1); /* Начальный размер */
+      }
+      50% {
+        transform: scale(1.2); /* Увеличенный размер */
+      }
+      100% {
+        transform: scale(1); /* Возвращение к начальному размеру */
+      }
+    }
+    .notification-button::before {
+      content: "";
+      width: 20px;
+      height: 20px;
+      background-color: rgba(246, 247, 248, 0.865);
+      border-radius: 61% 39% 60% 40% / 69% 28% 72% 31% ;
+      position: absolute;
+      top: 20px;
+      left:20px
+      z-index: 3; /* Позиционируйте точку под кнопкой */
+      box-shadow: 0 0 5px white;
+    }
+    .hidden {
+      display: none;
+    }
+    
+    .overlay-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url(44.png);
+      background-size: cover;
+      opacity: 0.3; /* Установите желаемую прозрачность */
+      pointer-events: none; /* Чтобы элемент не мешал взаимодействию с содержимым */
+      z-index: -1; /* Поместите элемент ниже всего остального содержимого */
+    }
+    .swal2-popup {
+      width: 700px !important;
+      height: 700px !important;
+      background-color: rgba(80, 113, 134, 0.511) !important; /* Изменим цвет с rgba(255, 192, 203, 0.65) на rgba(255, 192, 203, 0.4) */
+      border-radius: 46% 54% 55% 45% / 40% 50% 50% 60%;
+      box-shadow: inset 35px 35px 75px #02222ddb,
+      18px 24px 18px #22222243,
+      inset -20px -21px 35px  #f8ffff,
+      19px 21px 21px  #22222231;
+      padding: 0 !important; /* Убираем отступы внутри уведомления */
+      overflow: hidden; /* Чтобы изображение не выходило за пределы уведомления */
+      animation: animat 9.7s ease-in-out infinite , fadeInPopup 2s ease-in-out;;
+      transition: all 1s ease-in-out;
+    }
+    @keyframes animat{
+      0%{
+      border-radius:60% 40% 62% 38% / 37% 58% 42% 63% ;
+        
+
+      }
+      50%{
+        border-radius: 37% 63% 70% 30% / 25% 48% 52% 75%  ;
+      }
+      100%{
+        border-radius: 60% 40% 62% 38% / 37% 58% 42% 63% ;
+  
+      }
+    }
+    @keyframes fadeInPopup {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    
+    .swal2-popup::before {
+      content: "";
+      width: 50px;
+      height: 70px;
+      background-color: rgba(246, 253, 253, 0.71);
+      border-radius: 61% 39% 60% 40% / 69% 28% 72% 31% ;
+      opacity: 0.8;
+      position: absolute;
+      top: 170px;
+      left:60px; /* Чтобы кружочек был по центру над уведомлением */
+      z-index: 3; /* Позиционируйте кружочек над уведомлением */
+      box-shadow: 0 0 5px white ,inset 1px 2px 9px rgba(11, 77, 118, 0.498); /* Отсвет кружочка */
+    }
+    
+    /* Ваши текущие стили для .swal2-popup */
+    
+    .custom-popup-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .custom-popup-content img {
+      opacity: 0.7;
+      width: 800px !important;
+      height: 800px !important;
+      max-width: 95%; /* Уменьшим ширину изображения */
+      max-height: 95%; /* Уменьшим высоту изображения */
+      object-fit: contain; /* Сохраняем пропорции изображения при уменьшении */
+    }
+    #but2{
+      width: 100px;
+      height: 100px;
+      opacity: 0.7;
+      padding-bottom: 10px;
+      padding-right: 5px;
+    }
+    #customButton {
+      background-color: #f6fbff24;
+      width: 120px;
+      height: 120px;
+      color: white;
+      border: none;
+      cursor: pointer;;
+      position: absolute;
+      top: 510px;
+      left: 290px;
+      box-shadow: inset 5px 10px 20px rgba(2, 32, 55, 0.995),
+      15px 25px 10px rgba(0,0,0,0.1),
+      15px 20px 20px rgba(0,0,0,0.05),
+      inset -5px -5px 10px rgb(245, 253, 255);
+      border-radius: 46% 54% 55% 45% / 40% 50% 50% 60%;
+      animation: animat3 7s ease-in-out infinite, pulseAnimation2 1.5s ease-in-out infinite; /* Обе анимации */
+    }
+    @keyframes animat3{
+      0%{
+        border-radius:35% 65% 53% 47% / 34% 40% 60% 66%  ;
+
+      }
+      50%{
+      border-radius: 64% 36% 68% 32% / 42% 40% 60% 58% ;
+      }
+      100%{
+      border-radius:35% 65% 53% 47% / 34% 40% 60% 66% ;
+        
+      }
+    }
+    @keyframes pulseAnimation2 {
+      0% {
+        transform: scale(1); /* Начальный размер */
+      }
+      50% {
+        transform: scale(1.3); /* Увеличенный размер */
+      }
+      100% {
+        transform: scale(1); /* Возвращение к начальному размеру */
+      }
+    }
+    
+    #customButton:hover {
+      background-color: #075d8254;
+      border-radius: 49% 51% 50% 50% / 50% 50% 50% 50%  !important;
+    }
+    #customButton::before {
+      content: "";
+      width: 10px;
+      height: 12px;
+      background-color: rgba(246, 253, 253, 0.71);
+      border-radius: 34% 66% 60% 40% / 48% 38% 62% 52%  ;
+
+      position: absolute;
+      top: 20px;
+      left:20px; /* Чтобы кружочек был по центру над уведомлением */
+      z-index: 3; /* Позиционируйте кружочек над уведомлением */
+      box-shadow: 0 0 5px white; /* Отсвет кружочка */
+    }
+    #butgif{
+      opacity: 0.5;
+      width: 120px;
+      height: 120px;
+      padding-bottom: 12px;
+      animation:pulse2 1s ease-in-out infinite;
+    }
+    @keyframes pulse2 {
+      0% {
+        transform: scale(1); /* Начальный размер */
+      }
+      50% {
+        transform: scale(1.3); /* Увеличенный размер */
+      }
+      100% {
+        transform: scale(1); /* Возвращение к начальному размеру */
+      }
+    }
+    #backgroundImage {
+      transition: background-image 0.2s ease-in; /* Анимация с задержкой 0.5 секунды и плавностью */
+    }
+    
+  </style>
+</head>
+<body>
+  <div class="light">
+    <div class="wire"></div>
+    <div class="bulb">
+      <span></span>
+      <span></span>
+    </div>
+    <div class="switch" id="switch">
+      <div class="btn"></div>
+    </div>
+  </div>
+  <div class="overlay-image" id="backgroundImage"></div>
+  <div class="overlay">
+    <div class="background-image"></div>
+  <div class="image-container hidden">
+    <div class="grid-container">
+   <div class="img" onmouseover="handleBlockHover(1)"><div class="img-inner im1"><img id="img1" src="img/1.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(2)"><div class="img-inner im2"><img id="img2" src="img/2.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(3)"><div class="img-inner im3"><img id="img3" src="img/3.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(4)"><div class="img-inner im4"><img id="img4" src="img/4.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(5)"><div class="img-inner im5"><img id="img5" src="img/5.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(6)"><div class="img-inner im6"><img id="img6" src="img/6.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(7)"><div class="img-inner im7"><img id="img7" src="img/7.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(8)"><div class="img-inner im8"><img id="img8" src="img/8.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(9)"><div class="img-inner im9"><img id="img9" src="img/9.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(10)"><div class="img-inner im10"><img id="img10" src="img/10.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(11)"><div class="img-inner im11"><img id="img11" src="img/11.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(12)"><div class="img-inner im12"><img id="img12" src="img/12.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(13)"><div class="img-inner im13"><img id="img13" src="img/13.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(14)"><div class="img-inner im14"><img id="img14" src="img/14.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(15)"><div class="img-inner im15"><img id="img15" src="img/15.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(16)"><div class="img-inner im16"><img id="img16" src="img/16.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(17)"><div class="img-inner im17"><img id="img17" src="img/17.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(18)"><div class="img-inner im18"><img id="img18" src="img/18.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(19)"><div class="img-inner im19"><img id="img19" src="img/19.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(20)"><div class="img-inner im20"><img id="img20" src="img/20.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(21)"><div class="img-inner im21"><img id="img21" src="img/21.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(22)"><div class="img-inner im22"><img id="img22" src="img/22.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(23)"><div class="img-inner im23"><img id="img23" src="img/23.gif"></div></div>
+   <div class="img" onmouseover="handleBlockHover(24)"><div class="img-inner im24"><img id="img24" src="img/24.gif"></div></div>
+    </div>
+  </div>
+  </div>
+<button id="notificationButton" class="notification-button hidden"><img id="but2" src="7.gif" alt=""> </button>
+
+  <audio id="audio" src="click.mp3" autostart="false"></audio>
+  <audio id="hoverSound" src="drop.mp3"></audio>
+  <audio id="clickSound" src="drop2.mp3"></audio>
+
+
+  <script>
+    let btn = document.querySelector('.btn');
+    let body = document.querySelector('body');
+    let audio = document.querySelector('audio');
+    let overlay = document.querySelector('.overlay');
+    let imageContainer = document.querySelector('.image-container');
+    let isOn = false;
+    let clickCount = 0;
+    let hoveredBlocks = {}; // Объект для отслеживания наведенных блоков
+    
+    let notificationButton = document.getElementById('notificationButton');
+    let totalBlocks = 25;
+    let totalHovered = 0;
+    let uniqueBlockCount = {};
+    let clickSound = document.getElementById('clickSound');
+    let notificationSound = new Audio('drop2.mp3'); // Замените на путь к вашему звуковому файлу
+    
+    // Функция для обработки наведения на блоки
+    function handleBlockHover(blockId) {
+      if (!uniqueBlockCount[blockId]) {
+        uniqueBlockCount[blockId] = true;
+        totalHovered++;
+    
+        if (totalHovered === totalBlocks) {
+          notificationButton.classList.remove('hidden');
+        }
+      }
+    }
+    
+    // Обработчик клика по кнопке уведомления
+    notificationButton.onclick = function() {
+      clickSound.play();
+      notificationButton.style.animation = 'none';
+    
+      Swal.fire({
+        width: 700,
+        height: 700,
+        background: 'transparent',
+        backdrop: `
+          rgba(2, 18, 24, 0.724)
+          url("8.gif")
+          left top /cover
+        `,
+        html: `
+          <div class="custom-popup-content">
+            <img src="6.gif" alt="Изображение">
+          </div>
+          <button id="customButton"><img id="butgif" src="3.gif"></button>
+        `,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        customClass: {
+          popup: 'custom-popup-class',
+        },
+      });
+    
+      // Получите кнопку из созданного popup
+      const customButton = document.getElementById('customButton');
+    
+      // Добавьте обработчик события click к customButton
+      customButton.addEventListener('click', () => {
+        // Воспроизведение звукового эффекта при нажатии на кнопку в popup
+        notificationSound.play();
+        
+        // Выполните переход на другую страницу
+        window.location.href = 'index.html'; // Замените на URL желаемой страницы
+      });
+    };
+    
+    // Получите кнопку
+    const switchButton = document.querySelector('.switch');
+    
+    // Получите элемент фонового изображения
+    const backgroundImage = document.getElementById('backgroundImage');
+    
+    // Обработчик события для кнопки
+    switchButton.addEventListener('click', () => {
+      // Смените фоновое изображение на "55.png"
+      backgroundImage.style.backgroundImage = 'url(55.png)';
+      setTimeout(() => {
+        // Здесь выполняйте остальной код, который должен произойти после 2-секундной задержки
+        setTimeout(() => {
+          overlay.style.visibility = 'visible';
+          imageContainer.classList.remove('hidden');
+    
+          setTimeout(() => {
+            // Скрыть изображение "55.png" через 4 секунды
+            backgroundImage.style.backgroundImage = 'none';
+          }, 4000);
+        }, 2000);
+      }, 2000);
+    });
+    
+    // Получите все элементы с классом "img"
+    const imgElements = document.querySelectorAll('.img');
+    
+    // Получите элемент audio для звукового эффекта наведения
+    const hoverSound = document.getElementById('hoverSound');
+    
+    // Добавьте обработчик события mouseover для каждого блока с изображением
+    imgElements.forEach((imgElement) => {
+      imgElement.addEventListener('mouseover', () => {
+        // Воспроизведите звуковой эффект
+        hoverSound.play();
+        // Получите ID блока и передайте его в функцию обработки наведения
+        let blockId = imgElement.dataset.blockId;
+        handleBlockHover(blockId);
+      });
+    });
+    
+    btn.onclick = function() {
+      clickCount++;
+      isOn = !isOn;
+      body.classList.toggle('on');
+    
+      if (isOn) {
+        overlay.style.pointerEvents = 'auto';
+        overlay.style.backgroundColor = 'rgba(253, 253, 253, 0.2)';
+        imageContainer.style.display = 'flex';
+    
+        let backgroundImage = document.querySelector('.background-image');
+        backgroundImage.style.opacity = '1';
+    
+        // Анимация в фоновом изображении
+        backgroundImage.style.animation = 'fadeInBackground 2.5s ease-in-out forwards';
+      } else {
+        overlay.style.pointerEvents = 'none';
+        overlay.style.backgroundColor = 'rgba(255, 255, 255, 0)';
+        imageContainer.style.display = 'none';
+    
+        let backgroundImage = document.querySelector('.background-image');
+        backgroundImage.style.opacity = '0';
+        backgroundImage.style.animation = 'none';
+      }
+    
+      audio.play();
+    };
+</script>
+
+</body>
+</html>
